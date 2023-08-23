@@ -26,8 +26,8 @@ def get_dataset(dataset: str, tokenizer: PreTrainedTokenizerBase) -> (pd.DataFra
 
 def run_pcw_experiment(dataset: str, model: str, cache_dir: str, subsample_test_set: int, output_dir: str,
                        n_windows: List[int], n_shots_per_window: Optional[int], n_runs: int,
-                       random_seed: int, right_indentation: bool) -> None:
-    pcw_model = load_pcw_wrapper(model, cache_dir, right_indentation, max(n_windows))
+                       random_seed: int, right_indentation: bool, token=None) -> None:
+    pcw_model = load_pcw_wrapper(model, cache_dir, right_indentation, max(n_windows), token=token)
 
     test_df, train_df, labels = get_dataset(dataset, pcw_model.tokenizer)
 
@@ -67,5 +67,7 @@ if __name__ == '__main__':
                         help="number of examples to fit in each window", type=int, default=None)
     parser.add_argument('--right-indentation', dest='right_indentation', help="ident all windows to the right",
                         action='store_true', default=False)
+    parser.add_argument('--token', dest='token', default=None, type=str, help='HF token if needed')
     args = parser.parse_args()
+    print('running with token:', args.token)
     run_pcw_experiment(**vars(args))

@@ -13,7 +13,8 @@ def validate_model_name(model_name: str) -> None:
     assert 'llama' in model_name or 'gpt2' in model_name, f"Unknown model: {model_name}"
 
 
-def load_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
+def load_tokenizer(model_name: str, token=None) -> PreTrainedTokenizerBase:
+    print(f'Loading tokenizer:', model_name)
     if 'llama' in model_name:
         if model_name == 'seanmor5/tiny-llama-test' or 'decapoda-research' in model_name:  # debug mode:
             tokenizer = LlamaTokenizer.from_pretrained("decapoda-research/llama-7b-hf")
@@ -22,17 +23,20 @@ def load_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
             tokenizer.bos_token_id = 1
             tokenizer.eos_token_id = 2
         else:
-            tokenizer = LlamaTokenizer.from_pretrained(model_name)
+            tokenizer = LlamaTokenizer.from_pretrained(model_name, use_auth_token=token)
     else:
         # In our experiments we have added bos token to gpt2:
         tokenizer = GPT2Tokenizer.from_pretrained('gpt2', add_bos_token=True)
+    print('Finished loading tokenizer')
     return tokenizer
 
 
 def load_pcw_wrapper(model_name: str, cache_dir: str = None,
-                     right_indentation: bool = False, n_windows: int = 1) -> PCWModelWrapper:
+                     right_indentation: bool = False, n_windows: int = 1, token=None) -> PCWModelWrapper:
     validate_model_name(model_name)
-    config = AutoConfig.from_pretrained(model_name)
+    print('Loading model config:', model_name, f'has token={token is not None}')
+    config = AutoConfig.from_pretrained(model_name, use_auth_token=token)
+    print('Done loading config')
     device = "cuda" if torch.cuda.is_available() else "cpu"
     multi_gpus = torch.cuda.device_count() > 1
     model_args = {
@@ -61,9 +65,13 @@ def load_pcw_wrapper(model_name: str, cache_dir: str = None,
         model_args['eos_token_id'] = 2
         model_obj = LlamaForCausalLMPCW
         context_window_size = LLAMA_WINDOW_SIZE
+    if token is not None:
+        model_args['use_auth_token']= token
 
-    tokenizer = load_tokenizer(model_name)
+    tokenizer = load_tokenizer(model_name, token)
+    print('loading model', model_name, 'with the following config:', str(model_args))
     model = model_obj.from_pretrained(model_name, **model_args).eval()
+    print('model is ready')
     if not multi_gpus:
         model = model.to(device)
 
