@@ -27,4 +27,4 @@ export XDG_CACHE_HOME="/home/joberant/data_nobck/maorivgi/cache"
 PYTHONPATH=.
 OUTPUT_DIR=/home/joberant/data_nobck/maorivgi/outputs/pcw/llama27b/banking77
 
-python run_evaluation.py --dataset banking77 --cache-dir $CACHE --model "meta-llama/Llama-2-7b-hf" --n-windows 1 --n-windows 3 --subsample-test-set 100 --n-runs 3 --output-dir $OUTPUT_DIR --token $HF_TOKEN --n-shots-per-window 1 --n-shots-per-window 3 --n-shots-per-window -1
+python run_evaluation.py --dataset banking77 --cache-dir $CACHE --model "meta-llama/Llama-2-7b-hf" --n-windows 1 --n-windows 3 --n-windows 5 --n-windows 7 --n-windows 9 --subsample-test-set 250 --n-runs 5 --output-dir $OUTPUT_DIR --token $HF_TOKEN --n-shots-per-window 1 --n-shots-per-window 3 --n-shots-per-window 5 --n-shots-per-window 7 --n-shots-per-window 9 --n-shots-per-window -1

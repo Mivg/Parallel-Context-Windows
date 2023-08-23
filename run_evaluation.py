@@ -41,6 +41,7 @@ def run_pcw_experiment(dataset: str, model: str, cache_dir: str, subsample_test_
             # default behaviour: we take the maximum number of samples per window
             nspw = get_max_n_shots(train_df, test_df, pcw_model.tokenizer, pcw_model.context_window_size)
             _logger.info(f"Found max n shot per window = {nspw}")
+        print(f'Running with NSPW={nspw}, and n_windows={n_windows}')
 
         n_shots = [i * nspw for i in n_windows]
 
@@ -55,18 +56,18 @@ def run_pcw_experiment(dataset: str, model: str, cache_dir: str, subsample_test_
         for i in range(rows):
             for j in range(cols):
                 record = {
-                    "n_shots": i,
+                    "n_shots": n_shots[i],
                     "accuracy": accuracies[i][j],
                     "run_num": j,
                     "nspw": nspw
                 }
                 records.append(record)
 
-        # assume output dir already contains the model name
-        fname = f"{output_dir}/{dataset}_n_shots_results_over_{subsample_test_set}_samples_seed_{random_seed}_ri={right_indentation}.csv"
-        pd.DataFrame(records).to_csv(fname, index=False)
-        print('---------------------------------------------------')
-        print(f'Done running. You can find the results in {fname}')
+    # assume output dir already contains the model name
+    fname = f"{output_dir}/{dataset}_n_shots_results_over_{subsample_test_set}_samples_seed_{random_seed}_ri={right_indentation}.csv"
+    pd.DataFrame(records).to_csv(fname, index=False)
+    print('---------------------------------------------------')
+    print(f'Done running. You can find the results in {fname}')
 
 
 
