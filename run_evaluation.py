@@ -35,7 +35,7 @@ def run_pcw_experiment(dataset: str, model: str, cache_dir: str, subsample_test_
     records = []
 
     for nspw in n_shots_per_window:
-        od = os.path.join(output_dir, + f"nspw={nspw}")
+        od = os.path.join(output_dir, f"nspw={nspw}")
 
         if nspw == -1:
             # default behaviour: we take the maximum number of samples per window
