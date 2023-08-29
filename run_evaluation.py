@@ -48,6 +48,8 @@ def run_pcw_experiment(datasets: List[str], models: List[str], cache_dir: str, s
             for nspw in n_shots_per_window:
                 n_shots = [i * nspw for i in n_windows]  # here nspw may still be -1
                 output_path = os.path.join(output_dir, f"nspw={nspw}-n_shots_results_{'_'.join([str(i) for i in n_shots])}.npy")
+                nshots_file_name = os.path.join(output_dir, f"nspw={nspw}-n_shots.txt")
+                
                 os.makedirs(os.path.dirname(output_path), exist_ok=True)
                 if os.path.exists(output_path) and not overwrite:
                     print(f'Found results in {output_path}. Skipping...')
@@ -55,7 +57,7 @@ def run_pcw_experiment(datasets: List[str], models: List[str], cache_dir: str, s
                     # just load the records before
                     # load the npy file
                     accuracies = np.load(output_path)
-                    with open(os.path.join(output_dir, f"nspw={nspw}-n_shots.txt"), 'r') as f:
+                    with open(nshots_file_name, 'r') as f:
                         n_shots = eval(f.read())
                     rows, cols = accuracies.shape
                     for i in range(rows):
@@ -90,7 +92,7 @@ def run_pcw_experiment(datasets: List[str], models: List[str], cache_dir: str, s
                 print(f'Running with NSPW={nspw}, and n_windows={n_windows}')
 
                 n_shots = [i * nspw for i in n_windows]
-                with open(os.path.join(output_dir, f"nspw={nspw}-n_shots.txt"), 'w') as f:
+                with open(nshots_file_name, 'w') as f:
                     f.write(str(n_shots))
 
                 em = ExperimentManager(test_df, train_df, pcw_model, labels, random_seed=random_seed,

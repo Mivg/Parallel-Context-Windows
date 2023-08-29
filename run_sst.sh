@@ -35,4 +35,5 @@ python run_evaluation.py \
 --n-runs 3 \
 --output-dir $OUTPUT_DIR \
 --n-shots-per-window 1 3 -1 \
---cache-dir $CACHE
+--cache-dir $CACHE \
+--token $HF_TOKEN
