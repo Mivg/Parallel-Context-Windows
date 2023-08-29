@@ -76,7 +76,7 @@ def run_pcw_experiment(datasets: List[str], models: List[str], cache_dir: str, s
 
                 if pcw_model is None:
                     # lazy loading
-                    load_pcw_wrapper(model, cache_dir, right_indentation, max(n_windows), token=token)
+                    pcw_model = load_pcw_wrapper(model, cache_dir, right_indentation, max(n_windows), token=token)
                     print('Loaded model')
                 if test_df is None:
                     # lazy loading
