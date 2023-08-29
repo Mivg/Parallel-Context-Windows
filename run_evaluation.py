@@ -127,30 +127,35 @@ def run_pcw_experiment(datasets: List[str], models: List[str], cache_dir: str, s
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', dest='datasets', action='append', required=True,
-                        help=f'Name of dataset (for example sst2).'
-                             f' The supported datasets are: {DATASET_NAMES2LOADERS.keys()}')
-    parser.add_argument('--model', dest='models', action='append', default='gpt2',
+
+    # Datasets and model related arguments
+    parser.add_argument('--datasets', nargs='+', required=True,
+                        help=f'Name of datasets. Supported datasets: {DATASET_NAMES2LOADERS.keys()}')
+    parser.add_argument('--model', default='gpt2',
                         help='HF model name to use, either gpt2 or LLaMa family models')
-    parser.add_argument('--subsample-test-set', dest='subsample_test_set', action='store', required=False, type=int,
+
+    # Directories, caching, and I/O arguments
+    parser.add_argument('--output-dir', help="Directory for saving the results", default='./temp', type=str)
+    parser.add_argument('--cache-dir', help="Hugging face cache dir", type=str, default=None)
+    parser.add_argument('--token', default=None, type=str, help='HF token if needed')
+    parser.add_argument('--overwrite', help="If true, overwrite existing results", action='store_true', default=False)
+    
+    # Evaluation and sampling related arguments
+    parser.add_argument('--subsample-test-set', type=int,
                         help='Size of test set to use to speed up eval. None means using all test set.')
-    parser.add_argument('--output-dir', dest='output_dir', required=False, help="Directory for saving the results",
-                        default='./temp', action='store', type=str)
-    parser.add_argument('--cache-dir', help="Hugging face cache dir", type=str, default=None, dest='cache_dir')
-    parser.add_argument('--random-seed', dest='random_seed', required=False, default=42, action='store', type=int)
-    parser.add_argument('--n-runs', dest='n_runs',
-                        help="Number of times experiments are repeated for every number of windows", action='store',
+    parser.add_argument('--random-seed', default=42, type=int)
+    parser.add_argument('--n-runs', help="Number of times experiments are repeated for every number of windows",
                         type=int, default=1)
-    parser.add_argument('-n', '--n-windows', dest='n_windows', help="Number of parallel context windows",
-                        action='append', type=int)
-    parser.add_argument('--n-shots-per-window', dest='n_shots_per_window',
-                        help="number of examples to fit in each window (can be multiple items). use -1 for maximum possible",
-                        type=int, required=True, action='append')
-    parser.add_argument('--right-indentation', dest='right_indentation', help="ident all windows to the right",
+
+    # Windowing related arguments
+    parser.add_argument('-n', '--n-windows', nargs='+', help="Number of parallel context windows", type=int)
+    parser.add_argument('--n-shots-per-window', nargs='+',
+                        help="number of examples to fit in each window (can be multiple items). Use -1 for maximum possible",
+                        type=int, required=True)
+    parser.add_argument('--right-indentation', help="indent all windows to the right",
                         action='store_true', default=False)
-    parser.add_argument('--overwrite', dest='overwrite', help="If true, overwrite existing results",
-                        action='store_true', default=False)
-    parser.add_argument('--token', dest='token', default=None, type=str, help='HF token if needed')
+
     args = parser.parse_args()
+    
     print('running with token:', args.token)
     run_pcw_experiment(**vars(args))
