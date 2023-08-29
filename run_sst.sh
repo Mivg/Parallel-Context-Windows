@@ -25,6 +25,6 @@ export TORCH_HOME="/home/joberant/data_nobck/maorivgi/cache"
 export XDG_CACHE_HOME="/home/joberant/data_nobck/maorivgi/cache"
 
 PYTHONPATH=.
-OUTPUT_DIR=/home/joberant/data_nobck/maorivgi/outputs/pcw/gpt2_large/sst2
+OUTPUT_DIR=/home/joberant/data_nobck/maorivgi/outputs/pcw/
 
-python run_evaluation.py --dataset sst2 --cache-dir $CACHE --model gpt2-large --n-windows 1 --n-windows 3 --subsample-test-set 100 --n-runs 3 --output-dir $OUTPUT_DIR  --n-shots-per-window 1 --n-shots-per-window 3 --n-shots-per-window -1
+python run_evaluation.py --dataset sst2 --dataset banking77 --cache-dir $CACHE --model gpt2-large --model "meta-llama/Llama-2-7b-hf" --n-windows 1 --n-windows 3 --subsample-test-set 100 --n-runs 3 --output-dir $OUTPUT_DIR  --n-shots-per-window 1 --n-shots-per-window 3 --n-shots-per-window -1
