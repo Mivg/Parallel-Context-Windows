@@ -129,10 +129,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Datasets and model related arguments
-    parser.add_argument('--datasets', nargs='+', required=True,
+    parser.add_argument('--datasets', nargs='+', 
                         help=f'Name of datasets. Supported datasets: {DATASET_NAMES2LOADERS.keys()}')
-    parser.add_argument('--model', default='gpt2',
-                        help='HF model name to use, either gpt2 or LLaMa family models')
+    parser.add_argument('--models', nargs='+',
+                        help='HF model names to use, either gpt2 or LLaMa family models')
 
     # Directories, caching, and I/O arguments
     parser.add_argument('--output-dir', help="Directory for saving the results", default='./temp', type=str)
