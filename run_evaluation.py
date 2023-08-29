@@ -34,13 +34,14 @@ def run_pcw_experiment(datasets: List[str], models: List[str], cache_dir: str, s
     for model in models:
         clean_model_name = model.replace('/', '+').replace(' ', '_')
         print(f'* Starting with model: {model} ({clean_model_name})')
+        pcw_model = None
+
         for dataset in datasets: 
             clean_dataset_name = dataset.replace('/', '+').replace(' ', '_')
             print(f'\t- Running with dataset: {dataset} ({clean_dataset_name})')
             output_dir = os.path.join(base_output_dir, clean_model_name, clean_dataset_name)
-            pcw_model = load_pcw_wrapper(model, cache_dir, right_indentation, max(n_windows), token=token)
 
-            test_df, train_df, labels = get_dataset(dataset, pcw_model.tokenizer)
+            test_df, train_df, labels = None, None, None
 
             records = []
 
@@ -72,6 +73,15 @@ def run_pcw_experiment(datasets: List[str], models: List[str], cache_dir: str, s
                     print(f'Found results in {output_path}. Overwriting...')
                 else:
                     print(f'Running with {output_path}...')
+
+                if pcw_model is None:
+                    # lazy loading
+                    load_pcw_wrapper(model, cache_dir, right_indentation, max(n_windows), token=token)
+                    print('Loaded model')
+                if test_df is None:
+                    # lazy loading
+                    test_df, train_df, labels = get_dataset(dataset, pcw_model.tokenizer)
+                    print('Loaded dataset')
 
                 if nspw == -1:
                     # default behavior: we take the maximum number of samples per window
