@@ -2,7 +2,7 @@
 #SBATCH --output=/home/joberant/data_nobck/maorivgi/outputs/pcw/%j.out        # redirect stdout
 #SBATCH --error=/home/joberant/data_nobck/maorivgi/outputs/pcw/%j.out         # redirect stderr
 #SBATCH --partition=killable    # (see next section)
-#SBATCH --time=0-23:59:00                     # max time (minutes)
+#SBATCH --time=0-1:59:00                     # max time (minutes)
 #SBATCH --nodes=1                       # number of machines
 #SBATCH --ntasks=1                      # number of processes
 #SBATCH --mem=50000
@@ -25,6 +25,6 @@ export TORCH_HOME="/home/joberant/data_nobck/maorivgi/cache"
 export XDG_CACHE_HOME="/home/joberant/data_nobck/maorivgi/cache"
 
 PYTHONPATH=.
-OUTPUT_DIR=/home/joberant/data_nobck/maorivgi/outputs/pcw/llama27b/sst2
+OUTPUT_DIR=/home/joberant/data_nobck/maorivgi/outputs/pcw/
 
-python run_evaluation.py --dataset sst2 --cache-dir $CACHE --model "meta-llama/Llama-2-7b-hf" --n-windows 1 --n-windows 3 --subsample-test-set 100 --n-runs 3 --output-dir $OUTPUT_DIR --token $HF_TOKEN --n-shots-per-window 1 --n-shots-per-window 3 --n-shots-per-window -1
+python run_evaluation.py --dataset sst2 --dataset banking77 --cache-dir $CACHE --model "meta-llama/Llama-2-7b-hf" --n-windows 1 --n-windows 3 --subsample-test-set 100 --n-runs 3 --output-dir $OUTPUT_DIR --token $HF_TOKEN --n-shots-per-window 1 --n-shots-per-window 3 --n-shots-per-window -1

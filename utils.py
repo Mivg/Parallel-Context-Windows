@@ -62,16 +62,14 @@ def load_results(dataset_name: str, output_dir: str, plot=False) -> Tuple[npt.ND
     return results, n_shots
 
 
-def save_results(dataset: str, n_shots: List[int], results: npt.NDArray[int], output_dir: str,
+def save_results(dataset: str, n_shots: List[int], results: npt.NDArray[int], outpath: str,
                  model: str = '', plot_results: bool = True) -> None:
     if plot_results:
         plot_results_graph(results, dataset, n_shots, model)
         plt.show()
     if not dist.is_initialized() or dist.get_rank() == 0:
         # in case we use multiple GPUs - we only save one file
-        os.makedirs(output_dir, exist_ok=True)
-        output_path = f"{output_dir}/{dataset}_n_shots_results_{'_'.join([str(i) for i in n_shots])}.npy"
-        np.save(output_path, results)
+        np.save(outpath, results)
 
 
 def encode_labels(tokenizer: PreTrainedTokenizerBase, labels: List[str]) -> List[List[int]]:
