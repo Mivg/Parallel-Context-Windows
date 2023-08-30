@@ -1,15 +1,15 @@
 #!/bin/bash
 #SBATCH --output=/home/joberant/data_nobck/maorivgi/outputs/pcw/%j.out        # redirect stdout
 #SBATCH --error=/home/joberant/data_nobck/maorivgi/outputs/pcw/%j.out         # redirect stderr
-#SBATCH --partition=killable    # (see next section)
-#SBATCH --time=0-23:59:00                     # max time (minutes)
+#SBATCH --partition=gpu-a100-killable   
+#SBATCH --time=0-2:00:00                     # max time (minutes)
 #SBATCH --nodes=1                       # number of machines
 #SBATCH --ntasks=1                      # number of processes
 #SBATCH --mem=50000
 #SBATCH --cpus-per-task=4     # CPU cores per process
 #SBATCH --gpus=1               # GPUs in total
 #SBATCH --exclude=n-305
-#SBATCH --constraint="tesla_v100|geforce_rtx_3090|a5000|a6000"
+#SBATCH --constraint="a100"
 
 source ~/.bashrc
 conda activate pcw
@@ -25,6 +25,15 @@ export TORCH_HOME="/home/joberant/data_nobck/maorivgi/cache"
 export XDG_CACHE_HOME="/home/joberant/data_nobck/maorivgi/cache"
 
 PYTHONPATH=.
-OUTPUT_DIR=/home/joberant/data_nobck/maorivgi/outputs/pcw/llama27b/banking77
+OUTPUT_DIR=/home/joberant/data_nobck/maorivgi/outputs/pcw/
 
-python run_evaluation.py --dataset banking77 --cache-dir $CACHE --model "meta-llama/Llama-2-7b-hf" --n-windows 1 --n-windows 3 --n-windows 5 --n-windows 7 --n-windows 9 --subsample-test-set 250 --n-runs 5 --output-dir $OUTPUT_DIR --token $HF_TOKEN --n-shots-per-window 1 --n-shots-per-window 3 --n-shots-per-window 5 --n-shots-per-window 7 --n-shots-per-window 9 --n-shots-per-window -1
+python run_evaluation.py \
+--datasets sst2 SetFit/sst5 banking77 ibm/clinic150-sur trec \
+--model gpt2-large gpt2-xl "meta-llama/Llama-2-7b-hf" "meta-llama/Llama-2-13b-hf" \
+--n-windows 1 2 3 4 5 6 7 8 9 10 15 \
+--subsample-test-set 250 \
+--n-runs 10 \
+--output-dir $OUTPUT_DIR \
+--n-shots-per-window 1 2 3 4 5 10 15 20 -1 \
+--cache-dir $CACHE \
+--token $HF_TOKEN

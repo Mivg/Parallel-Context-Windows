@@ -50,6 +50,8 @@ def run_pcw_experiment(datasets: List[str], models: List[str], cache_dir: str, s
                 output_path = os.path.join(output_dir, f"nspw={nspw}-n_shots_results_{'_'.join([str(i) for i in n_shots])}.npy")
                 nshots_file_name = os.path.join(output_dir, f"nspw={nspw}-n_shots.txt")
                 
+                # TODO - incorporate n_runs in the caching system, so we can easily add additional runs, without running from scratch (or get different number of runs)
+                # TODO - also, the name currently contains the number of windows to have, so it's impossible to add more windows and use cache, just more nspw
                 os.makedirs(os.path.dirname(output_path), exist_ok=True)
                 if os.path.exists(output_path) and not overwrite:
                     print(f'Found results in {output_path}. Skipping...')
