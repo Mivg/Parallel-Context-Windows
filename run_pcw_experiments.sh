@@ -13,7 +13,7 @@
 
 source ~/.bashrc
 conda activate pcw
-cd /specific/netapp5/joberant/home/maorivgi/code/Parallel-Context-Windows
+cd /home/joberant/home/maorivgi/code/Parallel-Context-Windows
 
 # Set environment variables
 export ALLENNLP_CACHE_ROOT="/home/joberant/data_nobck/maorivgi/cache"

@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-def main(csv_path):
+def main(csv_path, std=True):
     # Reload the CSV and apply the recent modifications to recreate the figure
     df = pd.read_csv(csv_path)  # make sure you run in root as workdir
     df['windows'] = (df['n_shots'] / df['nspw']).astype(int)
@@ -51,17 +51,21 @@ def main(csv_path):
                         x_values = grouped['n_shots']
                         y_values = grouped['accuracy']['mean']
                         y_error = grouped['accuracy']['std']
+                        error_y = dict(type='data', array=y_error, visible=True) if std else None
                         
                         show_legend = f"nspw: {nspw}, windows: {windows}" not in added_legends
-                        fig.add_trace(go.Scatter(x=x_values, y=y_values, 
-                                                name=f"nspw: {nspw}, windows: {windows}" if show_legend else "",
-                                                mode='markers',
-                                                marker=dict(symbol=nspw_marker_mapping[nspw], size=10),
-                                                line=dict(color=windows_color_mapping[windows]),
-                                                error_y=dict(type='data', array=y_error, visible=True),
-                                                legendgroup=f"windows: {windows}", 
-                                                showlegend=show_legend),
-                                    row=dataset_idx, col=model_idx)
+                        text_values = [f"nspw: {nspw}, windows: {windows}, accuracy: {y:.2f}" for y in y_values]
+                        fig.add_trace(go.Scatter(x=x_values, y=y_values,
+                                                 name=f"nspw: {nspw}, windows: {windows}" if show_legend else "",
+                                                 mode='markers',
+                                                 marker=dict(symbol=nspw_marker_mapping[nspw], size=10),
+                                                 line=dict(color=windows_color_mapping[windows]),
+                                                 error_y=error_y,
+                                                 legendgroup=f"windows: {windows}",
+                                                 showlegend=show_legend,
+                                                 hoverinfo="x+y+text",
+                                                 text=text_values),
+                                      row=dataset_idx, col=model_idx)
                         if show_legend:
                             added_legends.add(f"nspw: {nspw}, windows: {windows}")
 
@@ -72,7 +76,7 @@ def main(csv_path):
                     xaxis_title="n_shots", yaxis_title="Accuracy")
 
     # Save the plot as another HTML file
-    another_updated_html_file_path = csv_path.replace('.csv', '.html')
+    another_updated_html_file_path = csv_path.replace('.csv', '.html') if std else csv_path.replace('.csv', '_no_std.html')
     fig.write_html(another_updated_html_file_path)
 
     print(f'Updated HTML file saved at {another_updated_html_file_path}')
@@ -80,3 +84,4 @@ def main(csv_path):
 
 if __name__ == '__main__':
     main(sys.argv[1])
+    main(sys.argv[1], False)
