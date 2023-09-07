@@ -5,6 +5,48 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
+def wrap_html(fig, output_path, nrows, ncols):
+    fig_height_per_subplot = 1000  # or whatever height you want per subplot
+    total_fig_height = fig_height_per_subplot * nrows
+    fig.update_layout(height=total_fig_height)
+
+
+    # # Force axes to be displayed on all subplots
+    # for dataset_idx in range(1, nrows + 1):
+    #     for model_idx in range(1, ncols + 1):
+    #         axis_suffix = f"{dataset_idx}{model_idx}" if dataset_idx > 1 or model_idx > 1 else ""
+    #         fig.update_layout({
+    #             f"xaxis{axis_suffix}.showticklabels": True,
+    #             f"yaxis{axis_suffix}.showticklabels": True
+    #         })
+
+    # Reduce padding between subplots
+    fig.update_layout(grid={'rows': nrows, 'columns': ncols, 'roworder': 'top to bottom'},
+                      margin=dict(t=50, b=50, l=50, r=50),
+                      title_x=0.5)
+
+    # Wrap the figure in a div with custom CSS for scrolling
+    wrapped_html = f"""
+        <html>
+            <head>
+                <style>
+                    #scrollDiv {{
+                        overflow-y: auto;
+                        height: 80vh;  # Adjust if needed
+                    }}
+                </style>
+            </head>
+            <body>
+                <div id="scrollDiv">
+                    {fig.to_html(full_html=False)}
+                </div>
+            </body>
+        </html>
+        """
+
+    with open(output_path, "w") as f:
+        f.write(wrapped_html)
+
 def main(csv_path, std=True):
     # Reload the CSV and apply the recent modifications to recreate the figure
     df = pd.read_csv(csv_path)  # make sure you run in root as workdir
@@ -77,7 +119,9 @@ def main(csv_path, std=True):
 
     # Save the plot as another HTML file
     another_updated_html_file_path = csv_path.replace('.csv', '.html') if std else csv_path.replace('.csv', '_no_std.html')
-    fig.write_html(another_updated_html_file_path)
+    wrap_html(fig, another_updated_html_file_path, len(unique_datasets), len(unique_models))
+    # fig.write_html(another_updated_html_file_path)
+
 
     print(f'Updated HTML file saved at {another_updated_html_file_path}')
 
